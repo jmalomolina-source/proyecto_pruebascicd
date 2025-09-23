@@ -8,7 +8,7 @@ with open('../../entrada/datos.txt', 'r', encoding='utf-8') as archivo_txt:
     lineas = archivo_txt.readlines()
     
 # Ahora puedes trabajar con la lista de líneas fuera de la sentencia 'with'
-print("Contenido del fichero XXXAAABBCCCDDDSign out from GitHub:")
+print("Contenido del fichero XXXAAABBCCCDDDEEEE")
 for linea in lineas:
     # La función .strip() elimina los espacios en blanco y saltos de línea al inicio y final
     print(linea.strip())
