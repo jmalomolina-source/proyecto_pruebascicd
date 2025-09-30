@@ -1,6 +1,10 @@
 
 import csv
 
+import keyring
+
+import sys
+
 # Abre el fichero en modo de lectura ('r' de 'read')
 # La sentencia 'with' se encarga de cerrarlo automáticamente
 with open('../../entrada/datos.txt', 'r', encoding='utf-8') as archivo_txt:
@@ -36,5 +40,14 @@ estudiante = {
 }
 
 with open('../../salida_tab2.csv', 'w', newline='', encoding='utf-8') as archivo_csv:
-    escritor_csv = csv.writer(archivo_csv, delimiter=';')
-    escritor_csv.writerows(estudiante)
+
+     escritor_csv = csv.writer(archivo_csv, delimiter=';')
+     escritor_csv.writerows(estudiante)
+
+     SERVICE_ID = "conexion.prueba" # Debe coincidir con el <TargetName> usado en cmdkey
+     USUARIO = "jmalo"               # Debe coincidir con el <UserName> usado en cmdkey
+
+     clave_recuperada = keyring.get_password(SERVICE_ID, USUARIO)
+     print (clave_recuperada)
+
+     print ("argumento:" + sys.argv[1])
