@@ -35,30 +35,34 @@ jobs:
         run: pip install -r requirements.txt
         shell: powershell
 
-     # Paso 4: Despliegue a Servidor Remoto (Tu PC)
-      - name: Despliegue Remoto vía SSH
-        uses: appleboy/ssh-action@v1.0.3 # Una de las Actions SSH más populares
+      # Paso 4: Despliegue a Servidor Remoto (Tu PC)
+      - name: Despliegue Remoto con Transferencia SCP
+        # Usamos una acción enfocada en SCP que funciona en Windows
+        uses: appleboy/scp-action@master 
         with:
           # --- Credenciales Seguras (Guardadas como Secrets de GitHub) ---
-          host: ${{ secrets.SSH_HOST }}        # Ejemplo: 192.168.1.10 o un dominio
-          username: ${{ secrets.SSH_USERNAME }}  # Tu nombre de usuario de Windows/SSH
-          key: ${{ secrets.SSH_PRIVATE_KEY }}   # Tu clave privada SSH (¡Más seguro!)
-          port: 22                             # El puerto SSH (por defecto 22)
-
-          # --- Comando de Despliegue ---
-          # Ejecuta los comandos en el servidor remoto (tu PC)
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22                             # El puerto SSH
+          
+          # --- Configuración de Transferencia de Archivos ---
+          # La acción SCP usa 'source' y 'target' directamente:
+          source: "." # La raíz del repositorio descargado
+          target: "C:/jmalo/FUENTES/GITHUB/fuentes/pro/ejecutable/" 
+          # Importante: Usa barras inclinadas (/) en la ruta de Windows para SCP/Git
+          
+      # Paso 5: Opcional - Ejecutar Comando Remoto Post-Despliegue
+      - name: Reiniciar Servicio ETL (Comando Remoto)
+        uses: appleboy/ssh-action@v1.0.3 # Usamos el SSH-Action solo para ejecutar comandos
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
           script: |
-            # 1. Crea la carpeta de destino en el servidor (si no existe)
-            if not exist "C:\jmalo\FUENTES\GITHUB\fuentes\pro\ejecutable" mkdir "C:\jmalo\FUENTES\GITHUB\fuentes\pro\ejecutable"
-            
-            # 2. Transfiere todos los archivos (usando SCP interno)
-            # Nota: SCP transfiere los archivos primero, y luego se ejecuta este script
-            
-            # 3. Mover los archivos transferidos al destino final
-            # (El path exacto puede variar según la Action, pero la idea es ejecutar el comando final de copia)
-            echo "Archivos transferidos y listos para uso."
-            
-          # --- Transferencia de Archivos ---
-          # El archivo a copiar desde el runner de GitHub (source) al destino (target)
-          source: "./" # El directorio de trabajo de GitHub Actions
-          target: "C:/jmalo/FUENTES/GITHUB/fuentes/pro/ejecutable/" # La carpeta en tu PC
+            # Aquí puedes poner comandos de Windows (CMD) o PowerShell
+            # Por ejemplo: Detener y reiniciar el servicio ETL
+            Stop-Service -Name "TuNombreDeServicioETL"
+            Start-Service -Name "TuNombreDeServicioETL"
+        shell: powershell
