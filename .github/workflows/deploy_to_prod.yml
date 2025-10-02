@@ -50,19 +50,5 @@ jobs:
           # La acción SCP usa 'source' y 'target' directamente:
           source: "." # La raíz del repositorio descargado
           target: "C:/jmalo/FUENTES/GITHUB/fuentes/pro/ejecutable/" 
-          # Importante: Usa barras inclinadas (/) en la ruta de Windows para SCP/Git
-          
-      # Paso 5: Opcional - Ejecutar Comando Remoto Post-Despliegue
-      - name: Reiniciar Servicio ETL (Comando Remoto)
-        uses: appleboy/ssh-action@v1.0.3 # Usamos el SSH-Action solo para ejecutar comandos
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            # Aquí puedes poner comandos de Windows (CMD) o PowerShell
-            # Por ejemplo: Detener y reiniciar el servicio ETL
-            Stop-Service -Name "TuNombreDeServicioETL"
-            Start-Service -Name "TuNombreDeServicioETL"
-        shell: powershell
+          # Importante: Usa barras inclinadas (/) en la ruta de Windows para SCP/Git  
+      
