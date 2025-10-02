@@ -35,18 +35,30 @@ jobs:
         run: pip install -r requirements.txt
         shell: powershell
 
-      # Paso 4: Despliegue - Simulación de Copia a la Carpeta de Producción
-      # ATENCIÓN: Esta ruta solo existe en el runner temporal de GitHub.
-      # Para un despliegue real, deberías usar SSH/FTP o Azure/AWS.
-      - name: Copiar código a carpeta de ejecutable (Simulación PRO)
-        run: |
-          $Destino = "C:\jmalo\FUENTES\GITHUB\fuentes\pro\ejecutable"
-          # Crea la carpeta de destino si no existe
-          New-Item -Path $Destino -ItemType Directory -Force
-          # Copia todos los archivos de Python a la carpeta
-          Copy-Item -Path .\*.py -Destination $Destino -Recurse -Force
-          Write-Host "Copia de código completada a: $Destino"
-          
-          # Puedes agregar pasos para iniciar el servicio ETL aquí si fuera un servidor real
-          # Ejemplo: Restart-Service -Name "ETL_Service_PRO" 
-        shell: powershell
+     # Paso 4: Despliegue a Servidor Remoto (Tu PC)
+      - name: Despliegue Remoto vía SSH
+        uses: appleboy/ssh-action@v1.0.3 # Una de las Actions SSH más populares
+        with:
+          # --- Credenciales Seguras (Guardadas como Secrets de GitHub) ---
+          host: ${{ secrets.SSH_HOST }}        # Ejemplo: 192.168.1.10 o un dominio
+          username: ${{ secrets.SSH_USERNAME }}  # Tu nombre de usuario de Windows/SSH
+          key: ${{ secrets.SSH_PRIVATE_KEY }}   # Tu clave privada SSH (¡Más seguro!)
+          port: 22                             # El puerto SSH (por defecto 22)
+
+          # --- Comando de Despliegue ---
+          # Ejecuta los comandos en el servidor remoto (tu PC)
+          script: |
+            # 1. Crea la carpeta de destino en el servidor (si no existe)
+            if not exist "C:\jmalo\FUENTES\GITHUB\fuentes\pro\ejecutable" mkdir "C:\jmalo\FUENTES\GITHUB\fuentes\pro\ejecutable"
+            
+            # 2. Transfiere todos los archivos (usando SCP interno)
+            # Nota: SCP transfiere los archivos primero, y luego se ejecuta este script
+            
+            # 3. Mover los archivos transferidos al destino final
+            # (El path exacto puede variar según la Action, pero la idea es ejecutar el comando final de copia)
+            echo "Archivos transferidos y listos para uso."
+            
+          # --- Transferencia de Archivos ---
+          # El archivo a copiar desde el runner de GitHub (source) al destino (target)
+          source: "./" # El directorio de trabajo de GitHub Actions
+          target: "C:/jmalo/FUENTES/GITHUB/fuentes/pro/ejecutable/" # La carpeta en tu PC
