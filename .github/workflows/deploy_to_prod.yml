@@ -1,0 +1,52 @@
+# Archivo: .github/workflows/deploy_to_prod.yml
+
+name: Despliegue a Carpeta Local PRO
+
+# 1. Configuración de Disparador (Trigger)
+# Se ejecuta cuando se fusiona cualquier Pull Request A la rama 'master' (o 'main')
+on:
+  push:
+    branches:
+      - main
+      # Si usas 'main' en lugar de 'master', cambia la línea anterior a: - main
+  workflow_dispatch: # Permite ejecución manual desde GitHub
+
+# 2. Definición del Trabajo (Job) de Despliegue
+jobs:
+  deploy:
+    # Usaremos un runner de Windows, ya que tu ruta de destino es de Windows (C:\)
+    # En producción real, usarías un runner personalizado o SSH para el servidor PRO.
+    runs-on: windows-latest 
+    environment: produccion # Opcional: Para usar Secretos/Variables de entorno específicos de PRO
+
+    steps:
+      # Paso 1: Descargar el código
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      # Paso 2: Configurar el ambiente Python
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      # Paso 3: Instalar las dependencias de la rama master
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+        shell: powershell
+
+      # Paso 4: Despliegue - Simulación de Copia a la Carpeta de Producción
+      # ATENCIÓN: Esta ruta solo existe en el runner temporal de GitHub.
+      # Para un despliegue real, deberías usar SSH/FTP o Azure/AWS.
+      - name: Copiar código a carpeta de ejecutable (Simulación PRO)
+        run: |
+          $Destino = "C:\jmalo\FUENTES\GITHUB\fuentes\pro\ejecutable"
+          # Crea la carpeta de destino si no existe
+          New-Item -Path $Destino -ItemType Directory -Force
+          # Copia todos los archivos de Python a la carpeta
+          Copy-Item -Path .\*.py -Destination $Destino -Recurse -Force
+          Write-Host "Copia de código completada a: $Destino"
+          
+          # Puedes agregar pasos para iniciar el servicio ETL aquí si fuera un servidor real
+          # Ejemplo: Restart-Service -Name "ETL_Service_PRO" 
+        shell: powershell
