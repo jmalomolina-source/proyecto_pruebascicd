@@ -2,53 +2,49 @@
 
 name: Despliegue a Carpeta Local PRO
 
-# 1. Configuración de Disparador (Trigger)
-# Se ejecuta cuando se fusiona cualquier Pull Request A la rama 'master' (o 'main')
 on:
   push:
     branches:
       - main
-      # Si usas 'main' en lugar de 'master', cambia la línea anterior a: - main
-  workflow_dispatch: # Permite ejecución manual desde GitHub
+  workflow_dispatch: 
 
-# 2. Definición del Trabajo (Job) de Despliegue
 jobs:
   deploy:
-    # Usaremos un runner de Windows, ya que tu ruta de destino es de Windows (C:\)
-    # En producción real, usarías un runner personalizado o SSH para el servidor PRO.
-    runs-on: windows-latest 
-    environment: produccion # Opcional: Para usar Secretos/Variables de entorno específicos de PRO
+    # Usamos Linux para evitar el error de compatibilidad con SCP/Windows.
+    runs-on: ubuntu-latest 
+    environment: produccion 
 
     steps:
       # Paso 1: Descargar el código
       - name: Checkout del repositorio
         uses: actions/checkout@v4
 
-      # Paso 2: Configurar el ambiente Python
+      # Paso 2: Configurar el ambiente Python (Necesario para el paso 3)
       - name: Configurar Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           
-      # Paso 3: Instalar las dependencias de la rama master
+      # Paso 3: Instalar las dependencias 
       - name: Instalar dependencias
         run: pip install -r requirements.txt
-        shell: powershell
-
-      # Paso 4: Despliegue a Servidor Remoto (Tu PC)
-      - name: Despliegue Remoto con Transferencia SCP
-        # Usamos una acción enfocada en SCP que funciona en Windows
+        
+      # -------------------------------------------------------------
+      # PASO 4: TRANSFERENCIA DE ARCHIVOS (USANDO CONTRASEÑA)
+      # -------------------------------------------------------------
+      - name: Transferencia de Código vía SCP a Windows
         uses: appleboy/scp-action@master 
         with:
-          # --- Credenciales Seguras (Guardadas como Secrets de GitHub) ---
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22                             # El puerto SSH
+          # --- Credenciales de Conexión ---
+          host: ${{ secrets.SSH_HOST }}        # Tu IP (ej: 192.168.3.90)
+          username: ${{ secrets.SSH_USERNAME }}  # Tu nombre de usuario de Windows
+          port: 22                             
           
-          # --- Configuración de Transferencia de Archivos ---
-          # La acción SCP usa 'source' y 'target' directamente:
-          source: "." # La raíz del repositorio descargado
-          target: "C:/jmalo/FUENTES/GITHUB/fuentes/pro/ejecutable/" 
-          # Importante: Usa barras inclinadas (/) en la ruta de Windows para SCP/Git  
+          # 🚨 USAMOS CONTRASEÑA (PASSWORD) EN LUGAR DE CLAVE PRIVADA
+          password: ${{ secrets.SSH_PASSWORD }}
+          
+          # --- Configuración de Transferencia ---
+          source: "." # Transfiere todos los archivos del repositorio
+          target: "C:/jmalo/FUENTES/GITHUB/fuentes/pro/ejecutable/"
+          # Usamos barras inclinadas (/) en la ruta de Windows para compatibilidad con SSH
       
