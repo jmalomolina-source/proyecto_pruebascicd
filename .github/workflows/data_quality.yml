@@ -21,4 +21,4 @@ jobs:
       # -------------------------------------------------------------
       - name: Verificar el Conteo de Registros
         # El código 0 será éxito; cualquier otro código causará el fallo del workflow
-        run: python ../proceso_calidad/proceso_calidad.py
+        run: python ../../proceso_calidad/proceso_calidad.py
