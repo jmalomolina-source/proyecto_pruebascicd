@@ -9,7 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout del repositorio
+      - name: 1. Configurar Identidad Genérica del Bot 🤖
+        # Esto es estándar y funcional para CUALQUIER usuario que inicie la pipeline
+        run: |
+          git config user.name "jmalomolina@gmail.com"
+          git config user.email "jmalomolina-source"
+
+      - name: 2. Checkout del repositorio
         uses: actions/checkout@v4
         # IMPORTANTE: Fetchear la historia completa para que el commit no falle
         with:

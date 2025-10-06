@@ -44,8 +44,8 @@ with open('../../salida_tab2.csv', 'w', newline='', encoding='utf-8') as archivo
      escritor_csv = csv.writer(archivo_csv, delimiter=';')
      escritor_csv.writerows(estudiante)
 
-     SERVICE_ID = "conexion.prueba" # Debe   coincidir con el <TargetName> usado en cmdkey
-     USUARIO = "jmalo"               # Debe  coincidir con el <UserName> usado en cmdkey
+     SERVICE_ID = "conexion.prueba" # Debe   CC coincidir con el <TargetName> usado en cmdkey
+     USUARIO = "jmalo"               # Debe  CC coincidir con el <UserName> usado en cmdkey
 
      clave_recuperada = keyring.get_password(SERVICE_ID, USUARIO)
      print (clave_recuperada)
