@@ -1,0 +1,3 @@
+Línea 1 des: Hola, mundo.
+Línea 2 des: Esto es un ejemplo.
+Línea 3 des: De lectura de ficheros.

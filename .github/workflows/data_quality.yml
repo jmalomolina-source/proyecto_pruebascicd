@@ -1,0 +1,26 @@
+on:
+  # Dispara el workflow solo si hay una PR dirigida a 'main'
+  pull_request: 
+    # Ejecuta solo cuando se abre, se actualiza (sincroniza) o se reabre la PR
+    types: [opened, synchronize, reopened]
+    branches: [ main ] 
+
+jobs:
+  data_quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout del repositorio
+        # Usa el código de la rama de la PR (develop), no la rama de destino (main)
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      # -------------------------------------------------------------
+      # PASO CLAVE: Ejecutar la prueba de calidad de datos
+      # -------------------------------------------------------------
+      - name: Verificar el Conteo de Registros
+        run: python proceso_calidad.py
