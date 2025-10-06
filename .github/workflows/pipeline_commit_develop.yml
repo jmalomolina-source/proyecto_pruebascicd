@@ -1,23 +1,36 @@
+name: Auto Commit y Push a Develop
+
+on:
+  # Dispara este workflow manualmente para evitar loops
+  workflow_dispatch:
+
 jobs:
-  automation_job:
+  auto_git_actions:
     runs-on: ubuntu-latest
+    
     steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        # IMPORTANTE: Fetchear la historia completa para que el commit no falle
+        with:
+          fetch-depth: 0 
+          # La acción de commit necesita un token de escritura, lo toma de esta forma:
+          token: ${{ secrets.GITHUB_TOKEN }} 
       
-      - name: 1. Ejecutar Tareas y Commit
-        run: |
-      
-
-          if git diff --exit-code; then
-            echo "No hay cambios para subir."
-          else
-            # Uso de variables de GitHub para hacer el commit más informativo
-            git commit -m "chore(auto): Archivo generado por pipeline manual. Ejecutado por: ${{ github.actor }}"
-            git push 
-          fi
-            git commit -m "chore(version): Actualización a ${{ github.event.inputs.new_version }}"
+          
+      # -----------------------------------------------------------------
+      # EJECUTAR COMANDOS - Simulando tus comandos
+      # -----------------------------------------------------------------
             
-            # C: Hace push a la rama de origen (donde se ejecutó la acción)
-            git push -u origin main
-            echo "Cambio de versión subido con éxito."
-          fi
-
+      - name: Git Add, Commit y Push
+        # Nota: La acción checkout@v4 ya soporta el token para el push
+        run: |
+          # El comando 'git add .'
+          git add .
+          
+          # El comando 'git commit -m "..."'
+          git commit -m "🤖 Actualización automática de log después del CI"
+          
+          # El comando 'git push -u origin develop' (si estás en la rama develop)
+          # Asume que el workflow se disparó desde develop
+          git push origin develop
