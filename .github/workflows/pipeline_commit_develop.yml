@@ -1,0 +1,23 @@
+jobs:
+  automation_job:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: 1. Ejecutar Tareas y Commit
+        run: |
+      
+
+          if git diff --exit-code; then
+            echo "No hay cambios para subir."
+          else
+            # Uso de variables de GitHub para hacer el commit más informativo
+            git commit -m "chore(auto): Archivo generado por pipeline manual. Ejecutado por: ${{ github.actor }}"
+            git push 
+          fi
+            git commit -m "chore(version): Actualización a ${{ github.event.inputs.new_version }}"
+            
+            # C: Hace push a la rama de origen (donde se ejecutó la acción)
+            git push -u origin main
+            echo "Cambio de versión subido con éxito."
+          fi
+
